@@ -1,15 +1,51 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html lang="de" data-ng-app="">
+<html lang="de" data-ng-app="demoApp">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
   <title>Document</title>
   <script src="js/angular.js"></script>
+  <script src="js/angular-route.js"></script>
 
+  <script>
+    var demoApp = angular.module('demoApp', ['ngRoute']);
+
+    demoApp.config( function ($routeProvider) {
+      $routeProvider
+        .when('/view1',
+          {
+            controller: 'SimpleController',
+            templateUrl: 'Partials/View1.html'
+          })
+        .when('/view2',
+          {
+            controller: 'SimpleController',
+            templateUrl: 'Partials/View2.html'
+          })
+        .otherwise({ redirectTo: '/view1' })
+      ;
+    });
+
+    var controllers = {};
+    controllers.SimpleController =  function ($scope) {
+      $scope.customers = [
+        {name: 'Mark', city: 'Hamburg'},
+        {name: 'Harald', city: 'Hanover'},
+        {name: 'Sven', city: 'Minesota'}
+      ];
+      $scope.addCustomer = function  () {
+        $scope.customers.push({name: $scope.newCustomer.name, city: $scope.newCustomer.city});
+      };
+    };
+    demoApp.controller(controllers);
+
+
+    //    app.controller('SimpleController', SimpleController);
+  </script>
 </head>
 <body>
   <div class="container"
     data-ng-init="names=['Dieter', 'Harald', 'Sven', 'Marco']">
-    
+
     Name: <input type="text" data-ng-model="name" />{{ name }}
 
     <h3>with ng-repeat strategy</h3>
@@ -17,7 +53,7 @@
       <li data-ng-repeat="personName in names">{{ personName }}</li>
     </ul>
   </div>
-  
+
   <div class="container"
     data-ng-init="customers=[{name: 'Dieter', city: 'Hamburg'},{name: 'Harald', city: 'Hanover'},{name: 'Sven', city: 'Minesota'}]">
     <input type="text" data-ng-model="nameText"/>
@@ -27,8 +63,20 @@
       </li>
     </ul>
   </div>
-  
-  
+
+  <div class="container"
+    data-ng-controller="SimpleController" >
+    <input type="text" data-ng-model="nameText2"/>
+    <ul>
+      <li data-ng-repeat="cust in customers | filter:nameText2 | orderBy:'name'">
+        {{ cust.name }} {{ cust.city }}
+      </li>
+    </ul>
+  </div>
+
+  <div data-ng-view=""></div>
+
+
   Hallo
 </body>
 </html>
